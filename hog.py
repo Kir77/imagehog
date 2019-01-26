@@ -1,19 +1,14 @@
 import cv2 
 import numpy as np 
-img = cv2.imread('/Users/qimindeng/Downloads/svm_images/train_images/airplanes/image_0030.jpg', cv2.IMREAD_GRAYSCALE) 
-# cv2.imshow('Image', img) # cv2.imwrite("Image-test.jpg", img) 
-# cv2.waitKey(0) 
-img = np.sqrt(img/float(np.max(img))) 
-# cv2.imshow('Image', img) 
-# cv2.imwrite("Image-test2.jpg", img) 
-# cv2.waitKey(0)
+img = cv2.imread('image_0030.jpg', cv2.IMREAD_GRAYSCALE) 
+img = np.sqrt(img/float(np.max(img))) #gamma
 height, width = img.shape 
-gradient_values_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5) 
-gradient_values_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=5) 
-gradient_magnitude = cv2.addWeighted(gradient_values_x, 0.5, gradient_values_y, 0.5, 0) 
-gradient_angle = cv2.phase(gradient_values_x, gradient_values_y, angleInDegrees=True) 
+gradient_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3) #kernal:3
+gradient_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3) 
+gradient_magnitude = cv2.addWeighted(gradient_x, 0.5, gradient_y, 0.5, 0) 
+gradient_angle = cv2.phase(gradient_x, gradient_y, angleInDegrees=True) 
 
-cell_size = 8 
+cell_size = 25#important
 bin_size = 8 
 angle_unit = 360 / bin_size 
 gradient_magnitude = abs(gradient_magnitude) 
@@ -56,7 +51,7 @@ for x in range(cell_gradient.shape[0]):
             y1 = int(y * cell_size + magnitude * cell_width * math.sin(angle_radian)) 
             x2 = int(x * cell_size - magnitude * cell_width * math.cos(angle_radian)) 
             y2 = int(y * cell_size - magnitude * cell_width * math.sin(angle_radian)) 
-            cv2.line(hog_image, (y1, x1), (y2, x2), int(255 * math.sqrt(magnitude))) 
+            cv2.line(hog_image, (y1, x1), (y2, x2), int(255 * math.sqrt(magnitude)),2) 
             angle += angle_gap 
 
 plt.imshow(hog_image, cmap=plt.cm.gray) 
